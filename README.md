@@ -1,7 +1,9 @@
-# Interactive Scheduler (with persistent storage)
+# Interactive Scheduler — Full Project
 
-- Uses localStorage with a stable key and migration from older keys.
-- Deploys to GitHub Pages via Actions (branch: `dev`).
+Includes:
+- `src/App.jsx` (latest with phone field, image thumbnail toggle, and "להציג מחירים ביצוא")
+- Tailwind + Vite setup
+- GitHub Actions workflow (deploy from `dev`)
 
 ## Local dev
 ```bash
@@ -16,6 +18,12 @@ npm run preview
 ```
 
 ## GitHub Pages
-Edit `vite.config.js`:
-- For `https://USER.github.io/REPO_NAME/`: set `base: '/REPO_NAME/'`
-- For `https://USER.github.io`: set `base: '/'`
+- If repo is `USERNAME.github.io/suka-app/` keep in `vite.config.js`:
+  ```js
+  base: '/suka-app/'
+  ```
+- If repo is `USERNAME.github.io` (root site):
+  ```js
+  base: '/'
+  ```
+Push to `dev` and the Action deploys automatically.

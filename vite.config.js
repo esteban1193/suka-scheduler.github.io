@@ -1,9 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// IMPORTANT:
-// - For https://USER.github.io/REPO_NAME/ use base: '/REPO_NAME/'
-// - For https://USER.github.io         use base: '/'
+// If your repo is https://USERNAME.github.io/suka-app/ keep base as '/suka-app/'
+// If your repo is USERNAME.github.io (root), change to base: '/'
 export default defineConfig({
   plugins: [react()],
   base: '/suka-app/',
