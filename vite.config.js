@@ -6,5 +6,5 @@ import react from '@vitejs/plugin-react'
 // - For https://USER.github.io         use base: '/'
 export default defineConfig({
   plugins: [react()],
-  base: '/REPO_NAME/',
+  base: '/suka-app/',
 })
