@@ -94,16 +94,11 @@ export default function InteractiveSchedule() {
     description: "",
     contact: "",
     organization: "",
-    phone: "",
-    imageDataUrl: ""
   });
   const [draggedEventId, setDraggedEventId] = useState(null);
   const [selectedEventId, setSelectedEventId] = useState(null);
   const [conflictMsg, setConflictMsg] = useState("");
-  
-  const [showThumbs, setShowThumbs] = useState(true);
-  const [showPricesOnExport, setShowPricesOnExport] = useState(true);
-const [startDate, setStartDate] = useState(() => {
+  const [startDate, setStartDate] = useState(() => {
     const today = new Date();
     const y = today.getFullYear();
     const m = (today.getMonth() + 1).toString().padStart(2, "0");
@@ -205,10 +200,6 @@ const [startDate, setStartDate] = useState(() => {
     } catch (e) {
       console.warn("Failed to load saved schedule:", e);
     }
-    if (typeof data.showThumbs === "boolean") setShowThumbs(data.showThumbs);
-  if (typeof data.showPricesOnExport === "boolean") setShowPricesOnExport(data.showPricesOnExport);
-};
-
   }, []);
 
   const catByKey = useMemo(
@@ -281,7 +272,7 @@ const [startDate, setStartDate] = useState(() => {
     }
     if (copy) {
       const clone = { ...candidate, id: Date.now() + Math.random() };
-      setEvents((prev) => [...prev, { ...clone }]);
+      setEvents((prev) => [...prev, clone]);
     } else {
       setEvents((prev) => prev.map((e) => (e.id === evToPlace.id ? candidate : e)));
     }
@@ -318,7 +309,10 @@ const [startDate, setStartDate] = useState(() => {
   // ===== Auto-save to localStorage on changes =====
   useEffect(() => {
     try {
-      const payload = { startDate, events, categories,
+      const payload = {
+        startDate,
+        events,
+        categories,
         sidebarWidthPx,
         sidebarPos,
         dayColWidthPx,
@@ -327,7 +321,7 @@ const [startDate, setStartDate] = useState(() => {
         filterOrg,
         filterConfirmed,
         searchText,
-      , showThumbs, showPricesOnExport };
+      };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
     } catch (e) {
       console.warn("Failed to save schedule:", e);
@@ -352,33 +346,30 @@ const [startDate, setStartDate] = useState(() => {
   
   const exportCSV = () => {
     // כותרות בעברית
-    let headers = ["כותרת","תאריך","מס׳ יום","שעה","משך (דק׳)","קטגוריה","מחיר","תיאור","איש קשר","טלפון","ארגון","נעוץ","סופי"];
-    if (!showPricesOnExport) headers = headers.filter(h => h !== "מחיר");
+    const headers = [
+      "כותרת","תאריך","מס׳ יום","שעה","משך (דק׳)","קטגוריה","מחיר",
+      "תיאור","איש קשר","ארגון","נעוץ","סופי"
+    ];
 
     // הכנה לשורות
     const rows = events.map((e) => {
       const date = e.dayIndex != null ? days[e.dayIndex]?.dateKey || "" : "";
       const catName = (catByKey[e.categoryKey]?.name) || "כללי";
-      const row = [
-  e.title ?? "",
-  date,
-  e.dayIndex ?? "",
-  e.time ?? "",
-  e.duration ?? "",
-  catName,
-  (typeof e.price === "number" ? e.price : ""),
-  e.description ?? "",
-  e.contact ?? "",
-  e.phone ?? "",
-  e.organization ?? "",
-  e.placed ? 1 : 0,
-  e.confirmed ? 1 : 0,
-];
-// הסרת מחיר אם ביקש להסתיר
-const idxPrice = headers.indexOf("מחיר");
-if (idxPrice === -1) { row.splice(6, 1); }
-return row;
-});
+      return [
+        e.title ?? "",
+        date,
+        e.dayIndex ?? "",
+        e.time ?? "",
+        e.duration ?? "",
+        catName,
+        (typeof e.price === "number" ? e.price : ""),
+        e.description ?? "",
+        e.contact ?? "",
+        e.organization ?? "",
+        e.placed ? 1 : 0,
+        e.confirmed ? "כן" : "לא",
+      ];
+    });
 
     // פונקציית ציטוט בטוחה ל-CSV (ללא רג'קסים)
     const needsQuote = (s) => s.includes('"') || s.includes(",") || s.includes("\n") || s.includes("\r");
@@ -445,21 +436,6 @@ return row;
     };
     reader.readAsText(file, "utf-8");
   };
-
-  const printPDF = // Inject print CSS once
-  useEffect(() => {
-    if (!document.getElementById("print-hide-prices-css")) {
-      const style = document.createElement("style");
-      style.id = "print-hide-prices-css";
-      style.textContent = "@media print {.hide-prices-print .price-inline{display:none !important;}}";
-      document.head.appendChild(style);
-    }
-  }, []);
-
-  // Toggle body class for print hiding
-  useEffect(() => {
-    document.body.classList.toggle("hide-prices-print", !showPricesOnExport);
-  }, [showPricesOnExport]);
 
   const printPDF = () => window.print();
 
@@ -703,10 +679,6 @@ return row;
                     <button className="bg-white/80 rounded px-1 text-[10px]" onClick={() => setSelectedEventId(e.id)} title="עריכה">✎</button>
                     <button className="bg-white/80 rounded px-1 text-[10px] text-red-600" onClick={() => deleteEvent(e.id)} title="מחיקה">✕</button>
                   </div>
-{showThumbs && e.imageDataUrl ? (
-  <img src={e.imageDataUrl} alt="" className="absolute top-1 right-7 w-5 h-5 rounded object-cover shadow pointer-events-none" />
-) : null}
-
                   <div className="mt-5 text-base font-bold leading-5">{e.title || "ללא כותרת"}</div>
                   <div className="text-xs text-gray-800 mt-1">משך: {e.duration} דק' {typeof e.price === "number" || e.price ? `• ₪${e.price}` : ""}</div>
                   {e.organization && <div className="text-xs mt-1">ארגון: {e.organization}</div>}
@@ -756,11 +728,7 @@ return row;
             {/* Export / Import */}
             <div className="p-3 rounded border">
               <div className="font-bold mb-2">ייצוא / ייבוא</div>
-              <label className="text-sm mb-2 flex items-center gap-2">
-  <input type="checkbox" checked={showPricesOnExport} onChange={(e) => setShowPricesOnExport(e.target.checked)} />
-  להציג מחירים ביצוא
-</label>
-<div className="grid grid-cols-2 gap-2 mb-2">
+              <div className="grid grid-cols-2 gap-2 mb-2">
                 <button className="bg-gray-800 text-white px-3 py-1 rounded w-full" onClick={exportJSON}>ייצא JSON</button>
                 <button className="bg-gray-700 text-white px-3 py-1 rounded w-full" onClick={exportCSV}>ייצא CSV</button>
               </div>
@@ -941,7 +909,7 @@ return row;
                         <div className="absolute bottom-5 right-2 text-[10px] opacity-85 truncate max-w-[10rem]">ארגון: {e.organization}</div>
                       )}
                       <div className="absolute bottom-1 right-2 text-[10px] opacity-85">
-                        {e.time} • {e.duration} דק' {typeof e.price === "number" && e.price > 0 ? <span className="price-inline">• ₪{e.price}</span> : ""}
+                        {e.time} • {e.duration} דק' {typeof e.price === "number" && e.price > 0 ? `• ₪${e.price}` : ""}
                       </div>
                       {/* Resize handle */}
                       <div
