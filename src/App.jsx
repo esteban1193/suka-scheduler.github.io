@@ -94,7 +94,6 @@ export default function InteractiveSchedule() {
     description: "",
     contact: "",
     organization: "",
-  ,
     phone: "",
     imageDataUrl: ""
   });
