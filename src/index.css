@@ -2,10 +2,4 @@
 @tailwind components;
 @tailwind utilities;
 
-/* small helper so tables look nice in print too */
-@media print {
-  body {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-}
+html, body, #root { height: 100%; }

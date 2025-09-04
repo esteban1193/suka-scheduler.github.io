@@ -1,26 +1,21 @@
-# Interactive Scheduler (Hebrew, RTL)
+# Interactive Scheduler (with persistent storage)
 
-אפליקציה לניהול לוח פעילויות בן 9 ימים, חצאי-שעה 09:30–23:00, פתקים, שיבוץ אוטומטי, חיפוש, קטגוריות וצבעים, סכומים יומיים ועל פי קטגוריות, וייצוא JSON/CSV.
+- Uses localStorage with a stable key and migration from older keys.
+- Deploys to GitHub Pages via Actions (branch: `dev`).
 
-## הרצה מקומית
-1. התקן Node.js (גרסת LTS מומלצת).
-2. פתח מסוף בתיקייה זו והרץ:
+## Local dev
 ```bash
-npm install
+npm i
 npm run dev
 ```
-3. פתח את הכתובת שמודפסת במסוף (לרוב `http://localhost:5173`).
 
-## בנייה להעלאה (Production)
+## Build
 ```bash
 npm run build
-npm run preview   # בדיקה מקומית של התוצר
+npm run preview
 ```
-הקבצים המוכנים להעלאה יופיעו בתיקיית `dist/` — העלה אותם לשרת/אחסון סטטי (למשל Vercel, Netlify, GitHub Pages וכו').
 
-## התאמה אישית
-- תאריך התחלה, חיפוש, סינון לפי קטגוריה, סכומי עלויות — בראש האפליקציה.
-- צד ימין: הוספת פתקים עם משך/מחיר/מיקום/תיאור/איש קשר/קטגוריה.
-- שיבוץ: גרור אירוע למשבצת או השתמש ב־⚡ לשיבוץ אוטומטי (גם לכולם יחד).
-- עריכה/מחיקה: דרך הכרטיס עצמו או בעורך הייעודי.
-- ייצוא/ייבוא: JSON/CSV מלוח הצד.
+## GitHub Pages
+Edit `vite.config.js`:
+- For `https://USER.github.io/REPO_NAME/`: set `base: '/REPO_NAME/'`
+- For `https://USER.github.io`: set `base: '/'`

@@ -32,6 +32,41 @@ const DEFAULT_CATEGORIES = [
 
 const STORAGE_KEY = "interactiveScheduler_v2";
 
+const FALLBACK_KEYS = [
+  "interactiveScheduler_v3",
+  "interactiveScheduler_v1",
+  "interactiveScheduler",
+  "scheduleData",
+  "schedulerData_v1"
+];
+
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+
+  for (const k of FALLBACK_KEYS) {
+    try {
+      const raw = localStorage.getItem(k);
+      if (raw) {
+        localStorage.setItem(STORAGE_KEY, raw);
+        return JSON.parse(raw);
+      }
+    } catch (e) {}
+  }
+  return null;
+}
+
+function saveToStorage(payload) {
+  try {
+    saveToStorage(payload);
+  } catch (e) {
+    console.warn("Save failed", e);
+  }
+}
+
+
 const HOLIDAYS_IL = {
   // 2024 (examples)
   "2024-10-02": "ראש השנה (א׳)",
